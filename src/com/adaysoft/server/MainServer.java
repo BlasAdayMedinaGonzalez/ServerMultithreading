@@ -48,18 +48,14 @@ public class MainServer {
                     boolean startMessage = message.startsWith("message");
                     if (startMessage) {
                         long timeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                        Date date = new Date(timeMillis);
-
-                        String timeFormated = sdf.format(date);
 
                         message = message.substring(message.indexOf(":")+1);
 
-                        String messageToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + message + " >";
+                        String messageToClient = "< " + name + " >" +  "[ " + formatTime(timeMillis) + " ]" + "< " + message + " >";
                         messagesListSync.add(messageToClient);
                         
                         oos.writeObject(messageToClient);
-                        
+
                     } else {
                         if (message.equals("bye")) {
                             oos.writeObject("goodbye");
@@ -72,8 +68,15 @@ public class MainServer {
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
+            
 
             System.out.println("Connection with : " + s.getInetAddress() + " closed");
+        }
+        public String formatTime(long timeMillis) {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            Date date = new Date(timeMillis);
+            String timeFormated = sdf.format(date);
+            return timeFormated;
         }
     }
 }
