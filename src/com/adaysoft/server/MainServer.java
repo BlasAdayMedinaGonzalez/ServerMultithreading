@@ -26,7 +26,7 @@ public class MainServer {
     }
 
     static class Monitor extends Thread {
-        private static List<String> msgsListSync = Collections.synchronizedList(new ArrayList<String>());
+        private static List<String> messagesListSync = Collections.synchronizedList(new ArrayList<String>());
         private Socket s = null;
 
         public Monitor(Socket s) {
@@ -39,13 +39,13 @@ public class MainServer {
             try ( ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
                   ObjectInputStream ois = new ObjectInputStream(s.getInputStream())) {
 
-                oos.writeObject(msgsListSync);
+                oos.writeObject(messagesListSync);
                 String name = (String) ois.readObject();
 
-                String msg = "";
-                while (!msg.equals("bye")) {
-                    msg = (String) ois.readObject();
-                    boolean startMessage = msg.startsWith("message");
+                String message = "";
+                while (!message.equals("bye")) {
+                    message = (String) ois.readObject();
+                    boolean startMessage = message.startsWith("message");
                     if (startMessage) {
                         long timeMillis = System.currentTimeMillis();
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -53,15 +53,15 @@ public class MainServer {
 
                         String timeFormated = sdf.format(date);
 
-                        msg = msg.substring(msg.indexOf(":")+1);
+                        message = message.substring(message.indexOf(":")+1);
 
-                        String msgToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + msg + " >";
-                        msgsListSync.add(msgToClient);
+                        String messageToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + message + " >";
+                        messagesListSync.add(messageToClient);
                         
+                        oos.writeObject(messageToClient);
                         
-                        oos.writeObject(msgToClient);
                     } else {
-                        if (msg.equals("bye")) {
+                        if (message.equals("bye")) {
                             oos.writeObject("goodbye");
                         } else {
                             oos.writeObject("Format message incorrect, make sure it start by: 'message:'");
