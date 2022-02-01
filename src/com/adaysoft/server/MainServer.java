@@ -46,14 +46,14 @@ public class MainServer {
                     boolean startMessage = msg.startsWith("message");
                     if (startMessage) {
                         long time = System.currentTimeMillis();
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm::ss");
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                         Date date = new Date(time);
 
                         String timeFormated = sdf.format(date);
 
-                        String [] splitedmsg = msg.split(":");
+                        msg = msg.substring(msg.indexOf(":")+1);
 
-                        String msgToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + splitedmsg[1] + " >";
+                        String msgToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + msg + " >";
                         msgList.add(msgToClient);
                         
                         
