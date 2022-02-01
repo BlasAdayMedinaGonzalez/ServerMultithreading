@@ -6,7 +6,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class MainServer {
     public static void main(String[] args) {
@@ -24,7 +26,7 @@ public class MainServer {
     }
 
     static class Monitor extends Thread {
-        private static ArrayList<String> msgList = new ArrayList<String>();
+        private static List<String> msgsListSync = Collections.synchronizedList(new ArrayList<String>());
         private Socket s = null;
 
         public Monitor(Socket s) {
@@ -37,7 +39,7 @@ public class MainServer {
             try ( ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
                   ObjectInputStream ois = new ObjectInputStream(s.getInputStream())) {
 
-                oos.writeObject(msgList);
+                oos.writeObject(msgsListSync);
                 String name = (String) ois.readObject();
 
                 String msg = "";
@@ -45,16 +47,16 @@ public class MainServer {
                     msg = (String) ois.readObject();
                     boolean startMessage = msg.startsWith("message");
                     if (startMessage) {
-                        long time = System.currentTimeMillis();
+                        long timeMillis = System.currentTimeMillis();
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                        Date date = new Date(time);
+                        Date date = new Date(timeMillis);
 
                         String timeFormated = sdf.format(date);
 
                         msg = msg.substring(msg.indexOf(":")+1);
 
                         String msgToClient = "< " + name + " >" +  "[ " + timeFormated + " ]" + "< " + msg + " >";
-                        msgList.add(msgToClient);
+                        msgsListSync.add(msgToClient);
                         
                         
                         oos.writeObject(msgToClient);
