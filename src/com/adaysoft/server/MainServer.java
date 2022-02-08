@@ -17,8 +17,8 @@ public class MainServer {
             System.out.println("Server is now running");
             while (true) {
                 s = ss.accept();
-                Monitor monitor = new Monitor(s);
-                monitor.start();
+                Monitor monitorClient = new Monitor(s);
+                monitorClient.start();
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -54,6 +54,7 @@ public class MainServer {
                         String messageToClient = "< " + name + " >" +  "[ " + formatTime(timeMillis) + " ]" + "< " + message + " >";
                         messagesListSync.add(messageToClient);
                         
+                       
                         oos.writeObject(messageToClient);
 
                     } else {
